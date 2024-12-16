@@ -1,3 +1,39 @@
+# OpenSSH fork with %c
+
+This is a fork of OpenSSH that adds %c as a new token that can be expanded in the ssh configuration.
+
+## Motivation
+
+I log in to a server ``remote`` using a time-consuming authentication process. Thankfully ControlMaster allows me to keep the connection open, reducing how often I need to go through this process. However, this doesn't work as well on a laptop, where the connection drops when I close the lid. My stationary computer ``middle`` doesn't have this problem. So I would like to use ControlMaster to keep a connection open on ``middle``, and then log in to ``remote`` via middle. This sounds like a job for ProxyJump, but that just does netcat-like forwarding. I couldn't figure out a way to make this work with remote-command either. One could use port forwarding tricks, but I preferred a solution without any extra listening ports to worry about.
+
+RemoteCommand sounds like it would to the trick, and for simple use cases it does:
+
+```
+Host remote
+   HostName middle
+   RemoteCommand ssh -t remote
+   RequestTTY yes
+```
+
+This works for simply sshing into remote, but it breaks for rsync, since you can't pass both a command and a RemoteCommand at the same time. That's what this fork solves. It makes the following changes:
+
+1. Removed the restriction that command and RemoteCommand are exclusive
+2. Made a new token %c available for token expansion in the confiuration file, which expands to an escaped version of the command
+3. If both command and RemoteCommand are passed, RemoteCommand is the one that gets used in the end.
+
+With this, something that works with both ssh and rsync looks like
+
+```
+Host remote
+   HostName middle
+   RemoteCommand ssh -t remote %c
+   RequestTTY yes
+```
+
+This still has some blemishes. The -t and RequestTTY cause harmless warnings about refusing to allocate a TTY for rsync. But they are necessary for an interactive login. Ideally they could be turned on/off based on whether a command was passed. This could be solved with further changes (e.g. just disabling that warning), but I wanted to keep this as minimal as possible.
+
+---------------
+
 # Portable OpenSSH
 
 [![C/C++ CI](https://github.com/openssh/openssh-portable/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/openssh/openssh-portable/actions/workflows/c-cpp.yml)
