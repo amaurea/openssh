@@ -623,6 +623,7 @@ ssh_conn_info_free(struct ssh_conn_info *cinfo)
 	free(cinfo->homedir);
 	free(cinfo->locuser);
 	free(cinfo->jmphost);
+	free(cinfo->command);
 	free(cinfo);
 }
 
@@ -1376,8 +1377,10 @@ main(int ac, char **av)
 	if (options.connection_attempts <= 0)
 		fatal("Invalid number of ConnectionAttempts");
 
+	/* SKN: Removed to allow remote_command to depend on command
 	if (sshbuf_len(command) != 0 && options.remote_command != NULL)
 		fatal("Cannot execute command-line and remote command.");
+	*/
 
 	/* Cannot fork to background if no command. */
 	if (options.fork_after_authentication && sshbuf_len(command) == 0 &&
@@ -1437,6 +1440,9 @@ main(int ac, char **av)
 	    "" : options.jump_host);
 	cinfo->conn_hash_hex = ssh_connection_hash(cinfo->thishost,
 	    cinfo->remhost, cinfo->portstr, cinfo->remuser, cinfo->jmphost);
+	/* SKN: Put a copy of the command in cinfo, so
+	 * we can use it when expanding the remote_command */
+	cinfo->command = xstrdup(sshbuf_len(command) > 0 ? sshbuf_ptr(command) : (const u_char*)"");
 
 	/*
 	 * Expand tokens in arguments. NB. LocalCommand is expanded later,
@@ -1450,6 +1456,9 @@ main(int ac, char **av)
 		    cinfo);
 		debug3("expanded RemoteCommand: %s", options.remote_command);
 		free(cp);
+		/* SKN: remote command has now had the chance to use command, so
+		 * replace command with it */
+		sshbuf_reset(command);
 		if ((r = sshbuf_put(command, options.remote_command,
 		    strlen(options.remote_command))) != 0)
 			fatal_fr(r, "buffer error");
