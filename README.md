@@ -4,7 +4,7 @@ This is a fork of OpenSSH that adds %c as a new token that can be expanded in th
 
 ## Motivation
 
-I log in to a server ``remote`` using a time-consuming authentication process. Thankfully ControlMaster allows me to keep the connection open, reducing how often I need to go through this process. However, this doesn't work as well on a laptop, where the connection drops when I close the lid. My stationary computer ``middle`` doesn't have this problem. So I would like to use ControlMaster to keep a connection open on ``middle``, and then log in to ``remote`` via middle. This sounds like a job for ProxyJump, but that just does netcat-like forwarding. I couldn't figure out a way to make this work with remote-command either. One could use port forwarding tricks, but I preferred a solution without any extra listening ports to worry about.
+I log in to a server ``remote`` using a time-consuming authentication process. Thankfully ControlMaster allows me to keep the connection open, reducing how often I need to go through this process. However, this doesn't work as well on a laptop, where the connection drops when I close the lid. My stationary computer ``middle`` doesn't have this problem. So I would like to use ControlMaster to keep a connection open on ``middle``, and then log in to ``remote`` via middle. This sounds like a job for ProxyJump, but that just does netcat-like forwarding. I couldn't figure out a way to make this work with ProxyCommand either. One could use port forwarding tricks, but I preferred a solution without any extra listening ports to worry about.
 
 RemoteCommand sounds like it would to the trick, and for simple use cases it does:
 
