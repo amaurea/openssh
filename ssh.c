@@ -1442,7 +1442,9 @@ main(int ac, char **av)
 	    cinfo->remhost, cinfo->portstr, cinfo->remuser, cinfo->jmphost);
 	/* SKN: Put a copy of the command in cinfo, so
 	 * we can use it when expanding the remote_command */
-	cinfo->command = xstrdup(sshbuf_len(command) > 0 ? sshbuf_ptr(command) : (const u_char*)"");
+	if(sshbuf_len(command) > 0) {
+		cinfo->command = escape_command(sshbuf_ptr(command));
+	} else cinfo->command = xstrdup("");
 
 	/*
 	 * Expand tokens in arguments. NB. LocalCommand is expanded later,

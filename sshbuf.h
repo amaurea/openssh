@@ -280,6 +280,9 @@ sshbuf_find(const struct sshbuf *b, size_t start_offset,
  */
 char *sshbuf_dup_string(struct sshbuf *buf);
 
+/* SKN */
+char * escape_command(const char * command);
+
 /*
  * Fill a buffer from a file descriptor or filename. Both allocate the
  * buffer for the caller.

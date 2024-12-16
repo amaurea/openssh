@@ -3116,3 +3116,20 @@ signal_is_crash(int sig)
 	}
 	return 0;
 }
+
+/* SKN */
+char * escape_command(const char * command) {
+	struct sshbuf * buf;
+	if ((buf = sshbuf_new()) == NULL) fatal_f("sshbuf_new failed");
+	/* We will replace every ' with '\'', and then surround the whole
+	 * thing with ' ' */
+	sshbuf_put(buf, "'", 1);
+	for(const char * c = command; *c; c++) {
+		if(*c == '\'') sshbuf_put(buf, "'\\''", 4);
+		else sshbuf_put(buf, c, 1);
+	}
+	sshbuf_put(buf, "'", 1);
+	char * res = sshbuf_dup_string(buf);
+	sshbuf_free(buf);
+	return res;
+}
