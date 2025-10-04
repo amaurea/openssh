@@ -1,6 +1,6 @@
 # OpenSSH fork with %c
 
-This is a fork of OpenSSH that adds %c as a new token that can be expanded in the ssh configuration.
+This is a fork of OpenSSH that adds %c as a new token that expands to the command passed to ssh in the ssh configuration.
 
 ## Motivation
 
