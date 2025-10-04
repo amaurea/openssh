@@ -165,7 +165,7 @@ typedef enum {
 	oEnableSSHKeysign, oRekeyLimit, oVerifyHostKeyDNS, oConnectTimeout,
 	oAddressFamily, oGssAuthentication, oGssDelegateCreds,
 	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
-	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
+	oSendEnv, oSetEnv, oPassCommand, oControlPath, oControlMaster, oControlPersist,
 	oHashKnownHosts,
 	oTunnel, oTunnelDevice,
 	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
@@ -289,6 +289,7 @@ static struct {
 	{ "serveralivecountmax", oServerAliveCountMax },
 	{ "sendenv", oSendEnv },
 	{ "setenv", oSetEnv },
+	{ "passcommand", oPassCommand },
 	{ "controlpath", oControlPath },
 	{ "controlmaster", oControlMaster },
 	{ "controlpersist", oControlPersist },
@@ -1918,6 +1919,10 @@ parse_pubkey_algos:
 		}
 		break;
 
+	case oPassCommand:
+		charptr = &options->pass_command;
+		goto parse_string;
+
 	case oControlPath:
 		charptr = &options->control_path;
 		goto parse_string;
@@ -2638,6 +2643,7 @@ initialize_options(Options * options)
 	options->num_send_env = 0;
 	options->setenv = NULL;
 	options->num_setenv = 0;
+	options->pass_command = NULL;
 	options->control_path = NULL;
 	options->control_master = -1;
 	options->control_persist = -1;
@@ -3606,6 +3612,7 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_string(oBindAddress, o->bind_address);
 	dump_cfg_string(oBindInterface, o->bind_interface);
 	dump_cfg_string(oCiphers, o->ciphers);
+	dump_cfg_string(oPassCommand, o->pass_command);
 	dump_cfg_string(oControlPath, o->control_path);
 	dump_cfg_string(oHostKeyAlgorithms, o->hostkeyalgorithms);
 	dump_cfg_string(oHostKeyAlias, o->host_key_alias);

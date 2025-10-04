@@ -47,7 +47,7 @@
 #include "ssh.h"
 #include "uidswap.h"
 
-static char *
+char *
 ssh_askpass(char *askpass, const char *msg, const char *env_hint)
 {
 	pid_t pid, ret;

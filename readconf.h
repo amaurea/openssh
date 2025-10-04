@@ -131,6 +131,7 @@ typedef struct {
 	u_int	num_setenv;
 	char	**setenv;
 
+	char	*pass_command;
 	char	*control_path;
 	int	control_master;
 	int     control_persist; /* ControlPersist flag */
