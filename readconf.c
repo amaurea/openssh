@@ -165,7 +165,8 @@ typedef enum {
 	oEnableSSHKeysign, oRekeyLimit, oVerifyHostKeyDNS, oConnectTimeout,
 	oAddressFamily, oGssAuthentication, oGssDelegateCreds,
 	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
-	oSendEnv, oSetEnv, oPassCommand, oControlPath, oControlMaster, oControlPersist,
+	oSendEnv, oSetEnv, oPassCommand, oPassArg, oChallCommand, oChallArg,
+	oControlPath, oControlMaster, oControlPersist,
 	oHashKnownHosts,
 	oTunnel, oTunnelDevice,
 	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
@@ -290,6 +291,9 @@ static struct {
 	{ "sendenv", oSendEnv },
 	{ "setenv", oSetEnv },
 	{ "passcommand", oPassCommand },
+	{ "passcommandarg", oPassArg },
+	{ "challengecommand", oChallCommand },
+	{ "challengecommandarg", oChallArg },
 	{ "controlpath", oControlPath },
 	{ "controlmaster", oControlMaster },
 	{ "controlpersist", oControlPersist },
@@ -1923,6 +1927,18 @@ parse_pubkey_algos:
 		charptr = &options->pass_command;
 		goto parse_string;
 
+	case oPassArg:
+		charptr = &options->pass_arg;
+		goto parse_string;
+
+	case oChallCommand:
+		charptr = &options->chall_command;
+		goto parse_string;
+
+	case oChallArg:
+		charptr = &options->chall_arg;
+		goto parse_string;
+
 	case oControlPath:
 		charptr = &options->control_path;
 		goto parse_string;
@@ -2644,6 +2660,9 @@ initialize_options(Options * options)
 	options->setenv = NULL;
 	options->num_setenv = 0;
 	options->pass_command = NULL;
+	options->pass_arg = NULL;
+	options->chall_command = NULL;
+	options->chall_arg = NULL;
 	options->control_path = NULL;
 	options->control_master = -1;
 	options->control_persist = -1;
@@ -3613,6 +3632,9 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_string(oBindInterface, o->bind_interface);
 	dump_cfg_string(oCiphers, o->ciphers);
 	dump_cfg_string(oPassCommand, o->pass_command);
+	dump_cfg_string(oPassArg, o->pass_arg);
+	dump_cfg_string(oChallCommand, o->chall_command);
+	dump_cfg_string(oChallArg, o->chall_arg);
 	dump_cfg_string(oControlPath, o->control_path);
 	dump_cfg_string(oHostKeyAlgorithms, o->hostkeyalgorithms);
 	dump_cfg_string(oHostKeyAlias, o->host_key_alias);

@@ -1044,7 +1044,7 @@ userauth_passwd(struct ssh *ssh)
 		error("Permission denied, please try again.");
 
 	if(options.pass_command) {
-		password = ssh_askpass(options.pass_command, "", NULL);
+		password = ssh_askpass(options.pass_command, options.pass_arg, NULL);
 	} else {
 		xasprintf(&prompt, "%s@%s's password: ", authctxt->server_user, host);
 		password = read_passphrase(prompt, 0);
@@ -1987,7 +1987,14 @@ input_userauth_info_req(int type, u_int32_t seq, struct ssh *ssh)
 		    authctxt->server_user, options.host_key_alias ?
 		    options.host_key_alias : authctxt->host, prompt) == -1)
 			fatal_f("asmprintf failed");
-		response = read_passphrase(display_prompt, echo ? RP_ECHO : 0);
+
+		if(options.chall_command) {
+			response = ssh_askpass(options.chall_command, options.chall_arg, NULL);
+			fprintf(stderr, "auto challenge response %s\n", response);
+		} else {
+			response = read_passphrase(display_prompt, echo ? RP_ECHO : 0);
+			fprintf(stderr, "user challenge response %s\n", response);
+		}
 		if ((r = sshpkt_put_cstring(ssh, response)) != 0)
 			goto out;
 		freezero(response, strlen(response));

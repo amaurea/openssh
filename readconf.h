@@ -132,6 +132,11 @@ typedef struct {
 	char	**setenv;
 
 	char	*pass_command;
+	char	*pass_arg;
+
+	char	*chall_command;
+	char	*chall_arg;
+
 	char	*control_path;
 	int	control_master;
 	int     control_persist; /* ControlPersist flag */
